@@ -7,6 +7,8 @@ const ImageCollection = props.imagesStore.map(imageItem => {
     <ImageItem
         key ={imageItem.id}
         previewURL={imageItem.previewURL}
+        largeImageURL ={imageItem.largeImageURL}
+        handleOpenModal = {props.handleOpenModal}
         tags={imageItem.tags}
     />
     )

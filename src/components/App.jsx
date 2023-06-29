@@ -11,6 +11,8 @@ export class App extends Component {
     searchText: "",
     page: 1,
     countOnPage: 20,
+    modalOpen: false,
+    imgModal: null,
   }
   apiKey = "36205936-cd8fb584a14544fbe3836796c"
   baseUrl ="https://pixabay.com/api/"
@@ -34,6 +36,21 @@ export class App extends Component {
             })
           })
     }
+    const handleOpenModal = (img) => {
+      this.setState({
+        ...this.state,
+        imgModal: img,
+        modalOpen: true
+      })
+    }
+    const handleCloseModal = () => {
+      this.setState({
+      ...this.state,
+      imgModal: null,
+      modalOpen: false          
+      })
+    }
+
     const handleLoadMore = () => {
       axios.get(`${this.baseUrl}/?q=${this.state.searchText}&key=${this.apiKey}&image_type=photo&orientation=horizontal&per_page=${this.state.countOnPage}&page=${this.state.page+1}`)
     .then(res=>{
@@ -54,9 +71,9 @@ export class App extends Component {
         updateSearch={updateSearch}
         searchAPI={searchAPI}
       />
-      {this.state.images.length !== 0 ? <ImageGallery imagesStore = {this.state.images}/> : null}
+      {this.state.images.length !== 0 ? <ImageGallery handleOpenModal={handleOpenModal} imagesStore = {this.state.images}/> : null}
       {this.state.images.length !== 0 ? <Button handleLoadMore = {handleLoadMore}/> : null}
-      <Modal />
+      {this.state.modalOpen && <Modal imgModal = {this.state.imgModal} handleCloseModal={handleCloseModal}/>}
     </div>
   )};
 };

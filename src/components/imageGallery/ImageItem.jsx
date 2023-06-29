@@ -1,8 +1,11 @@
 import s from './imageGallery.module.css'
 
 const ImageItem = (props) => {
+    const handleClick = () => {
+        props.handleOpenModal(props.largeImageURL)
+    }
     return (
-        <div className={s.imageItem}>
+        <div onClick={handleClick} className={s.imageItem}>
                 <img 
                     className={s.imageCard} 
                     src={props.previewURL} 
