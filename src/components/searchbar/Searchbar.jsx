@@ -1,6 +1,7 @@
+import propTypes from 'prop-types'
 import s from './searchbar.module.css';
 
-const Searchbar = props => {
+const Searchbar = ({updateSearch, searchAPI}) => {
   return (
     <header className={s.header}>
       <div className={s.searchPanel}>
@@ -8,10 +9,10 @@ const Searchbar = props => {
           className={s.searchInput}
           placeholder="entry text"
           onChange={e => {
-            props.updateSearch(e.target.value);
+            updateSearch(e.target.value);
           }}
         />
-        <button onClick={props.searchAPI} className={s.searchBtn}>
+        <button onClick={searchAPI} className={s.searchBtn}>
           <svg
             className={s.icon}
             viewBox="0 0 24 24"
@@ -44,5 +45,10 @@ const Searchbar = props => {
     </header>
   );
 };
+
+Searchbar.propTypes = {
+  updateSearch: propTypes.func,
+  searchAPI: propTypes.string
+}
 
 export default Searchbar;

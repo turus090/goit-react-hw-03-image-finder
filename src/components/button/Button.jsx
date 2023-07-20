@@ -1,9 +1,12 @@
+import propTypes from 'prop-types'
 import s from './button.module.css'
 
-const Button = (props) => {
+const Button = ({handleLoadMore}) => {
     return (
-        <button onClick={props.handleLoadMore} className = {s.btn}>Load More</button>
+        <button onClick={handleLoadMore} className = {s.btn}>Load More</button>
     )
 }
-
+Button.propTypes = {
+    handleLoadMore: propTypes.func
+}
 export default Button

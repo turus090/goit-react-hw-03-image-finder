@@ -1,14 +1,15 @@
+import propTypes from 'prop-types'
 import ImageItem from './ImageItem'
 import s from './imageGallery.module.css'
 
-const ImageGallery = (props) => {
-const ImageCollection = props.imagesStore.map(imageItem => {
+const ImageGallery = ({imagesStore, handleOpenModal}) => {
+const ImageCollection = imagesStore.map(imageItem => {
     return (
     <ImageItem
         key ={imageItem.id}
         previewURL={imageItem.previewURL}
         largeImageURL ={imageItem.largeImageURL}
-        handleOpenModal = {props.handleOpenModal}
+        handleOpenModal = {handleOpenModal}
         tags={imageItem.tags}
     />
     )
@@ -18,6 +19,11 @@ const ImageCollection = props.imagesStore.map(imageItem => {
            {ImageCollection}
         </div>
     )
+}
+
+ImageGallery.propTypes = {
+    imagesStore: propTypes.array,
+    handleOpenModal: propTypes.func
 }
 
 export default ImageGallery
