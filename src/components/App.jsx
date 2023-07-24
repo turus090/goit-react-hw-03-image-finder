@@ -4,6 +4,7 @@ import Searchbar from './searchbar/Searchbar';
 import { Component } from 'react';
 import Button from './button/Button';
 import Modal from './modal/Modal';
+import Loader from './loader/Loader';
 
 export class App extends Component {
   state = {
@@ -13,78 +14,91 @@ export class App extends Component {
     countOnPage: 20,
     modalOpen: false,
     imgModal: null,
+    isLoading: false
   };
   apiKey = '36205936-cd8fb584a14544fbe3836796c';
   baseUrl = 'https://pixabay.com/api/';
-  render() {
-    const updateSearch = newSearch => {
-      this.setState({
-        ...this.state,
-        searchText: newSearch,
-      });
-    };
-    const searchAPI = () => {
-      console.log('click');
-      axios
-        .get(
-          `${this.baseUrl}/?q=${this.state.searchText}&key=${this.apiKey}&image_type=photo&orientation=horizontal&per_page=${this.state.countOnPage}&page=${this.state.page}`
-        )
-        .then(res => {
-          console.log(res);
-          this.setState({
-            ...this.state,
-            images: [...res.data.hits],
-          });
+  
+  
+   updateSearch = newSearch => {
+    this.setState({
+      ...this.state,
+      searchText: newSearch,
+    });
+  };
+   searchAPI = () => {
+    this.setState(prevState=>{
+      prevState.isLoading = true
+    })
+    console.log('click');
+    axios
+      .get(
+        `${this.baseUrl}/?q=${this.state.searchText}&key=${this.apiKey}&image_type=photo&orientation=horizontal&per_page=${this.state.countOnPage}&page=${this.state.page}`
+      )
+      .then(res => {
+        console.log(res);
+        this.setState({
+          ...this.state,
+          images: [...res.data.hits],
+          isLoading:false
         });
-    };
-    const handleOpenModal = img => {
-      this.setState({
-        ...this.state,
-        imgModal: img,
-        modalOpen: true,
       });
-    };
-    const handleCloseModal = () => {
-      this.setState({
-        ...this.state,
-        imgModal: null,
-        modalOpen: false,
-      });
-    };
+  };
+   handleOpenModal = img => {
+    this.setState({
+      ...this.state,
+      imgModal: img,
+      modalOpen: true,
+    });
+  };
+   handleCloseModal = () => {
+    this.setState({
+      ...this.state,
+      imgModal: null,
+      modalOpen: false,
+    });
+  };
 
-    const handleLoadMore = () => {
-      axios
-        .get(
-          `${this.baseUrl}/?q=${this.state.searchText}&key=${
-            this.apiKey
-          }&image_type=photo&orientation=horizontal&per_page=${
-            this.state.countOnPage
-          }&page=${this.state.page + 1}`
-        )
-        .then(res => {
-          this.setState({
-            ...this.state,
-            images: [...this.state.images, ...res.data.hits],
-            page: this.state.page + 1,
-          });
+   handleLoadMore = () => {
+    this.setState(prevState=>{
+      prevState.isLoading = true
+    })
+    axios
+      .get(
+        `${this.baseUrl}/?q=${this.state.searchText}&key=${
+          this.apiKey
+        }&image_type=photo&orientation=horizontal&per_page=${
+          this.state.countOnPage
+        }&page=${this.state.page + 1}`
+      )
+      .then(res => {
+        this.setState({
+          ...this.state,
+          images: [...this.state.images, ...res.data.hits],
+          page: this.state.page + 1,
+          isLoading: false
         });
-    };
+      });
+    }
+  render() {
+  
     return (
       <div>
-        <Searchbar updateSearch={updateSearch} searchAPI={searchAPI} />
+        {this.state.isLoading && <Loader/>}
+        <Searchbar updateSearch={this.updateSearch} searchAPI={this.searchAPI} />
         {this.state.images.length !== 0 ? (
           <ImageGallery
-            handleOpenModal={handleOpenModal}
+            handleOpenModal={this.handleOpenModal}
             imagesStore={this.state.images}
           />
         ) : null}
         {this.state.images.length !== 0 ? (
-          <Button handleLoadMore={handleLoadMore} />
+          <Button handleLoadMore={this.handleLoadMore} />
         ) : null}
         {this.state.modalOpen && (
           <Modal
             imgModal={this.state.imgModal}
-            handleCloseModal={handleCloseModal}
+            handleCloseModal={this.handleCloseModal}
           />
         )}
       </div>
