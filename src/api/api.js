@@ -1,0 +1,15 @@
+import axios from "axios";
+const apiKey = '36205936-cd8fb584a14544fbe3836796c';
+const baseUrl = 'https://pixabay.com/api/';
+
+const getImages = (searchText, countOnPage, page, updateImgs) => {
+    axios
+    .get(
+      `${baseUrl}/?q=${searchText}&key=${apiKey}&image_type=photo&orientation=horizontal&per_page=${countOnPage}&page=${page}`
+    )
+    .then ((res) => {
+        updateImgs(res.data.hits)
+    })
+}
+
+export default getImages

@@ -48,7 +48,7 @@ const Searchbar = ({updateSearch, searchAPI}) => {
 
 Searchbar.propTypes = {
   updateSearch: propTypes.func,
-  searchAPI: propTypes.string
+  searchAPI: propTypes.func
 }
 
 export default Searchbar;

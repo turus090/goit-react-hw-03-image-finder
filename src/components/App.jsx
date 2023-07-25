@@ -1,10 +1,10 @@
-import axios from 'axios';
 import ImageGallery from './imageGallery/ImageGallery';
 import Searchbar from './searchbar/Searchbar';
 import { Component } from 'react';
 import Button from './button/Button';
 import Modal from './modal/Modal';
 import Loader from './loader/Loader';
+import getImages from 'api/api';
 
 export class App extends Component {
   state = {
@@ -16,69 +16,56 @@ export class App extends Component {
     imgModal: null,
     isLoading: false
   };
-  apiKey = '36205936-cd8fb584a14544fbe3836796c';
-  baseUrl = 'https://pixabay.com/api/';
   
-  
-   updateSearch = newSearch => {
+
+  updateImgs = (imgList) => {
     this.setState({
       ...this.state,
-      searchText: newSearch,
+      images: [
+        ...this.state.images,
+        ...imgList
+      ],
+      isLoading:false
+    });
+  }
+  componentDidUpdate(prevProps,prevState){
+    console.log(prevState)
+    console.log(this.state)
+    if (prevState.searchText !== this.state.searchText || prevState.page !== this.state.page){
+      getImages(prevState.searchText, prevState.countOnPage, prevState.page, this.updateImgs)
+    }
+  }
+   updateSearch = newSearch => {
+    this.setState(prevState =>{
+      prevState.searchText = newSearch
+      prevState.isLoading = false
     });
   };
    searchAPI = () => {
-    this.setState(prevState=>{
+   this.setState(prevState=>{
       prevState.isLoading = true
     })
-    console.log('click');
-    axios
-      .get(
-        `${this.baseUrl}/?q=${this.state.searchText}&key=${this.apiKey}&image_type=photo&orientation=horizontal&per_page=${this.state.countOnPage}&page=${this.state.page}`
-      )
-      .then(res => {
-        console.log(res);
-        this.setState({
-          ...this.state,
-          images: [...res.data.hits],
-          isLoading:false
-        });
-      });
+    getImages(this.state.searchText, this.state.countOnPage, this.state.page, this.updateImgs)
   };
    handleOpenModal = img => {
-    this.setState({
-      ...this.state,
-      imgModal: img,
-      modalOpen: true,
-    });
+    this.setState(prevState => {
+      prevState.imgModal = img
+      prevState.modalOpen = true
+    })
   };
    handleCloseModal = () => {
-    this.setState({
-      ...this.state,
-      imgModal: null,
-      modalOpen: false,
-    });
+    this.setState(prevState=> {
+      prevState.imgModal = null
+      prevState.modalOpen = false
+    })
   };
 
    handleLoadMore = () => {
-    this.setState(prevState=>{
-      prevState.isLoading = true
-    })
-    axios
-      .get(
-        `${this.baseUrl}/?q=${this.state.searchText}&key=${
-          this.apiKey
-        }&image_type=photo&orientation=horizontal&per_page=${
-          this.state.countOnPage
-        }&page=${this.state.page + 1}`
-      )
-      .then(res => {
-        this.setState({
-          ...this.state,
-          images: [...this.state.images, ...res.data.hits],
-          page: this.state.page + 1,
-          isLoading: false
-        });
-      });
+      this.setState(prevState=>{
+        prevState.page += 1 
+        prevState.isLoading = true
+      })
+      getImages(this.state.searchText, this.state.countOnPage, this.state.page+1, this.updateImgs)
     }
   render() {
   
