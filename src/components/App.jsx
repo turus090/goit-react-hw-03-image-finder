@@ -14,58 +14,56 @@ export class App extends Component {
     countOnPage: 20,
     modalOpen: false,
     imgModal: null,
-    isLoading: false
+    isLoading: false,
+    showImg: false
   };
   
 
-  updateImgs = (imgList) => {
-    this.setState({
-      ...this.state,
-      images: [
-        ...this.state.images,
-        ...imgList
-      ],
-      isLoading:false
-    });
-  }
-  componentDidUpdate(prevProps,prevState){
-    console.log(prevState)
-    console.log(this.state)
-    if (prevState.searchText !== this.state.searchText || prevState.page !== this.state.page){
-      getImages(prevState.searchText, prevState.countOnPage, prevState.page, this.updateImgs)
+  componentDidUpdate = async (prevProps,prevState) => {
+    if (prevState.showImg !== this.state.showImg || prevState.isLoading !== this.state.isLoading){
+      const data = await getImages(prevState.searchText, prevState.countOnPage, prevState.page)
+      this.setState(prevState=>({
+        images: [
+          ...prevState.images,
+          ...data.hits
+        ],
+        isLoading:false
+      }))
     }
   }
    updateSearch = newSearch => {
-    this.setState(prevState =>{
-      prevState.searchText = newSearch
-      prevState.isLoading = false
-    });
+    
+    this.setState(prevState=>({
+      searchText: newSearch,
+      images: newSearch.length === 0 ? [] : prevState.images,
+      isLoading: false,
+      showImg: false
+    }))
   };
-   searchAPI = () => {
-   this.setState(prevState=>{
-      prevState.isLoading = true
-    })
-    getImages(this.state.searchText, this.state.countOnPage, this.state.page, this.updateImgs)
+   searchAPI = async () => {
+   this.setState(prevState=>({
+      showImg: true
+    }))
   };
    handleOpenModal = img => {
-    this.setState(prevState => {
-      prevState.imgModal = img
-      prevState.modalOpen = true
-    })
+    this.setState(prevState=>({
+      imgModal: img,
+      modalOpen: true
+    }))
+
   };
    handleCloseModal = () => {
-    this.setState(prevState=> {
-      prevState.imgModal = null
-      prevState.modalOpen = false
-    })
+    this.setState(prevState=>({
+      imgModal: null,
+      modalOpen: false
+    }))
   };
 
    handleLoadMore = () => {
-      this.setState(prevState=>{
-        prevState.page += 1 
-        prevState.isLoading = true
-      })
-      getImages(this.state.searchText, this.state.countOnPage, this.state.page+1, this.updateImgs)
+      this.setState(prevState=>({
+        page:prevState.page+1,
+        isLoading: true
+    }))
     }
   render() {
   
@@ -73,7 +71,7 @@ export class App extends Component {
       <div>
         {this.state.isLoading && <Loader/>}
         <Searchbar updateSearch={this.updateSearch} searchAPI={this.searchAPI} />
-        {this.state.images.length !== 0 ? (
+        {this.state.showImg ? (
           <ImageGallery
             handleOpenModal={this.handleOpenModal}
             imagesStore={this.state.images}
