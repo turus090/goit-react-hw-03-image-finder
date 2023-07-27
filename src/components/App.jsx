@@ -6,6 +6,7 @@ import Modal from './modal/Modal';
 import Loader from './loader/Loader';
 import getImages from 'api/api';
 
+
 export class App extends Component {
   state = {
     images: [],
@@ -20,15 +21,24 @@ export class App extends Component {
   
 
   componentDidUpdate = async (prevProps,prevState) => {
-    if (prevState.showImg !== this.state.showImg || prevState.isLoading !== this.state.isLoading){
-      const data = await getImages(prevState.searchText, prevState.countOnPage, prevState.page)
-      this.setState(prevState=>({
-        images: [
-          ...prevState.images,
-          ...data.hits
-        ],
-        isLoading:false
-      }))
+    if (prevState.searchText !== this.state.searchText || prevState.page !== this.state.page){
+      try{
+          const data = await getImages(prevState.searchText, prevState.countOnPage, prevState.page)
+          this.setState(prevState=>({
+            images: [
+              ...prevState.images,
+              ...data.hits
+            ]
+          }))
+
+      } catch (e) {
+        console.log(e)
+      }
+      finally{
+        this.setState(()=>({
+          isLoading:false
+        }))
+      }
     }
   }
    updateSearch = newSearch => {

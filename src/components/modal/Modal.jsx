@@ -1,31 +1,22 @@
 import propTypes from 'prop-types';
 import s from './modal.module.css';
-import { Component, createRef } from 'react';
+import { Component } from 'react';
 
-/*
-const Modal = ({imgModal, handleCloseModal}) => {
-
-  return (
-    <div onClick={handleCloseModal} className={s.modalContainer}>
-      <img className={s.modalImg} src={imgModal} alt="modal" />
-    </div>
-  );
-};
-*/
 class Modal extends Component{
-  constructor(){
-  super()
+  handleClose = (e) =>{
+    if (e.code === 'Escape') {
+      this.props.handleCloseModal();
+    }
   }
-  bodyModalRef = createRef()
   componentDidMount(){
-  this.bodyModalRef.current.addEventListener("click", this.props.handleCloseModal)
+  window.addEventListener("keydown",this.handleClose)
   }
   componentWillUnmount(){
-    this.bodyModalRef.current.removeEventListener("click", this.props.handleCloseModal)
+    window.removeEventListener("keydown", this.handleClose)
   }
   render(){
     return (
-      <div ref={this.bodyModalRef} className={s.modalContainer}>
+      <div  className={s.modalContainer}>
         <img className={s.modalImg} src={this.props.imgModal} alt="modal" />
       </div>
     )
