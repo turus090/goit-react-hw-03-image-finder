@@ -16,19 +16,24 @@ export class App extends Component {
     modalOpen: false,
     imgModal: null,
     isLoading: false,
-    showImg: false
+    moreBtn: false
   };
   
 
   componentDidUpdate = async (prevProps,prevState) => {
     if (prevState.searchText !== this.state.searchText || prevState.page !== this.state.page){
+      this.setState(()=>({
+        isLoading: true
+      }))
       try{
-          const data = await getImages(prevState.searchText, prevState.countOnPage, prevState.page)
+          const data = await getImages(prevState.searchText, prevState.page)
+        console.log(data)
           this.setState(prevState=>({
             images: [
               ...prevState.images,
               ...data.hits
-            ]
+            ],
+            moreBtn: this.state.page < Math.ceil(data.totalHits/12)
           }))
 
       } catch (e) {
@@ -43,27 +48,22 @@ export class App extends Component {
   }
    updateSearch = newSearch => {
     
-    this.setState(prevState=>({
+    this.setState(()=>({
       searchText: newSearch,
-      images: newSearch.length === 0 ? [] : prevState.images,
+      images:  [],
       isLoading: false,
       showImg: false
     }))
-  };
-   searchAPI = async () => {
-   this.setState(prevState=>({
-      showImg: true
-    }))
-  };
+  }
    handleOpenModal = img => {
-    this.setState(prevState=>({
+    this.setState(()=>({
       imgModal: img,
       modalOpen: true
     }))
 
   };
    handleCloseModal = () => {
-    this.setState(prevState=>({
+    this.setState(()=>({
       imgModal: null,
       modalOpen: false
     }))
@@ -72,7 +72,6 @@ export class App extends Component {
    handleLoadMore = () => {
       this.setState(prevState=>({
         page:prevState.page+1,
-        isLoading: true
     }))
     }
   render() {
@@ -80,16 +79,16 @@ export class App extends Component {
     return (
       <div>
         {this.state.isLoading && <Loader/>}
-        <Searchbar updateSearch={this.updateSearch} searchAPI={this.searchAPI} />
-        {this.state.showImg ? (
+        <Searchbar updateSearch={this.updateSearch} />
+        {this.state.images.length ? (
           <ImageGallery
             handleOpenModal={this.handleOpenModal}
             imagesStore={this.state.images}
           />
         ) : null}
-        {this.state.images.length !== 0 ? (
+        {this.state.moreBtn && (
           <Button handleLoadMore={this.handleLoadMore} />
-        ) : null}
+        ) }
         {this.state.modalOpen && (
           <Modal
             imgModal={this.state.imgModal}
