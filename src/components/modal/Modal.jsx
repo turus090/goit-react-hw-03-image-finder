@@ -1,4 +1,3 @@
-import propTypes from 'prop-types';
 import s from './modal.module.css';
 import { Component, createRef } from 'react';
 
