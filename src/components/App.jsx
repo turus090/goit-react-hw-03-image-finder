@@ -26,7 +26,7 @@ export class App extends Component {
         isLoading: true
       }))
       try{
-          const data = await getImages(prevState.searchText, prevState.page)
+          const data = await getImages(this.state.searchText,this.state.page)
         console.log(data)
           this.setState(prevState=>({
             images: [
@@ -46,13 +46,12 @@ export class App extends Component {
       }
     }
   }
-   updateSearch = newSearch => {
+   submitSearch = newSearch => {
     
     this.setState(()=>({
       searchText: newSearch,
       images:  [],
-      isLoading: false,
-      showImg: false
+      isLoading: false
     }))
   }
    handleOpenModal = img => {
@@ -79,7 +78,7 @@ export class App extends Component {
     return (
       <div>
         {this.state.isLoading && <Loader/>}
-        <Searchbar updateSearch={this.updateSearch} />
+        <Searchbar submitSearch={this.submitSearch} />
         {this.state.images.length ? (
           <ImageGallery
             handleOpenModal={this.handleOpenModal}
